@@ -1,0 +1,40 @@
+{
+  "id": "MAP_UNDERWATER_ROUTE102",
+  "name": "Underwater_Route102",
+  "layout": "LAYOUT_UNDERWATER_ROUTE102",
+  "music": "MUS_UNDERWATER",
+  "region_map_section": "MAPSEC_ROUTE_102",
+  "requires_flash": false,
+  "weather": "WEATHER_NONE",
+  "map_type": "MAP_TYPE_UNDERWATER",
+  "allow_cycling": false,
+  "allow_escaping": false,
+  "allow_running": false,
+  "show_map_name": false,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_ROUTE102",
+      "offset": 0,
+      "direction": "emerge"
+    }
+  ],
+  "object_events": [
+
+  ],
+  "warp_events": [
+    {
+      "x": 43,
+      "y": 1,
+      "elevation": 0,
+      "dest_map": "MAP_UNDERWATER_OLDALE_SPRINGS",
+      "dest_warp_id": "0"
+    }
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}
