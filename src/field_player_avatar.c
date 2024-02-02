@@ -635,11 +635,6 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
         }
         else
         {
-<<<<<<< HEAD
-            u8 adjustedCollision = collision - COLLISION_STOP_SURFING;
-            if (adjustedCollision > 3)
-                PlayerNotOnBikeCollide(direction);
-=======
             //  GrindRun:  Most of this logic is to only allow grind running
             //      while running and not walking normally.  If you plan to
             //      change this, consider that GrindRun takes control away
@@ -678,7 +673,6 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
                 }
             }
             return;
->>>>>>> 8b793e1f055cd6e63e464e48bb6d7d9f14947884
         }
         return;
     }
