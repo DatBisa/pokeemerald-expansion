@@ -230,6 +230,10 @@ static bool8 (*const sArrowWarpMetatileBehaviorChecks[])(u8) =
     [DIR_NORTH - 1] = MetatileBehavior_IsNorthArrowWarp,
     [DIR_WEST - 1]  = MetatileBehavior_IsWestArrowWarp,
     [DIR_EAST - 1]  = MetatileBehavior_IsEastArrowWarp,
+    [DIR_SOUTHWEST -1] MetatileBehavior_IsSouthwestArrowWarp,
+    [DIR_SOUTHEAST - 1] MetatileBehavior_IsSoutheastArrowWarp,
+    [DIR_NORTHWEST - 1] MetatileBehavior_IsNorthwestArrowWarp,
+    [DIR_NORTHEAST - 1] MetatileBehavior_IsNortheastArrowWarp,
 };
 
 static const u8 sRivalAvatarGfxIds[][2] =
@@ -296,6 +300,10 @@ static bool8 (*const sArrowWarpMetatileBehaviorChecks2[])(u8) =  //Duplicate of 
     [DIR_NORTH - 1] = MetatileBehavior_IsNorthArrowWarp,
     [DIR_WEST - 1]  = MetatileBehavior_IsWestArrowWarp,
     [DIR_EAST - 1]  = MetatileBehavior_IsEastArrowWarp,
+    [DIR_SOUTHWEST -1] MetatileBehavior_IsSouthwestArrowWarp,
+    [DIR_SOUTHEAST - 1] MetatileBehavior_IsSoutheastArrowWarp,
+    [DIR_NORTHWEST - 1] MetatileBehavior_IsNorthwestArrowWarp,
+    [DIR_NORTHEAST - 1] MetatileBehavior_IsNortheastArrowWarp,
 };
 
 static bool8 (*const sPushBoulderFuncs[])(struct Task *, struct ObjectEvent *, struct ObjectEvent *) =
@@ -613,20 +621,18 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
         if (collision == COLLISION_LEDGE_JUMP)
         {
             PlayerJumpLedge(direction);
-            return;
         }
         else if (collision == COLLISION_OBJECT_EVENT && IsPlayerCollidingWithFarawayIslandMew(direction))
         {
             PlayerNotOnBikeCollideWithFarawayIslandMew(direction);
-            return;
         }
         else
         {
             u8 adjustedCollision = collision - COLLISION_STOP_SURFING;
             if (adjustedCollision > 3)
                 PlayerNotOnBikeCollide(direction);
-            return;
         }
+        return;
     }
 
     if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_SURFING)
@@ -679,6 +685,13 @@ u8 CheckForObjectEventCollision(struct ObjectEvent *objectEvent, s16 x, s16 y, u
 
     if (ShouldJumpLedge(x, y, direction))
     {
+        if (IsDirectionDiagonal(direction))
+        {
+            MoveCoords(direction, &x, &y);
+            collision = GetCollisionAtCoords(objectEvent, x, y, direction);
+            if (collision == COLLISION_IMPASSABLE)
+                return collision;
+        }
         IncrementGameStat(GAME_STAT_JUMPED_DOWN_LEDGES);
         return COLLISION_LEDGE_JUMP;
     }
@@ -1112,6 +1125,13 @@ static void PlayCollisionSoundIfNotFacingWarp(u8 direction)
     }
 }
 
+void GetXYCoordsOneStepInFrontOfPlayerNonDiagonal(s16 *x, s16 *y)
+{
+    *x = gObjectEvents[gPlayerAvatar.objectEventId].currentCoords.x;
+    *y = gObjectEvents[gPlayerAvatar.objectEventId].currentCoords.y;
+    MoveCoords(GetPlayerFacingDirectionNonDiagonal(), x, y);
+}
+
 void GetXYCoordsOneStepInFrontOfPlayer(s16 *x, s16 *y)
 {
     *x = gObjectEvents[gPlayerAvatar.objectEventId].currentCoords.x;
@@ -1152,6 +1172,22 @@ u8 player_get_pos_including_state_based_drift(s16 *x, s16 *y)
         case MOVEMENT_ACTION_PLAYER_RUN_RIGHT:
             (*x)++;
             return TRUE;
+        case MOVEMENT_ACTION_WALK_NORMAL_NORTHWEST:
+            (*y)--;
+            (*x)--;
+            return TRUE;
+        case MOVEMENT_ACTION_WALK_NORMAL_NORTHEAST:
+            (*y)--;
+            (*x)++;
+            return TRUE;
+        case MOVEMENT_ACTION_WALK_NORMAL_SOUTHWEST:
+            (*y)++;
+            (*x)--;
+            return TRUE;
+        case MOVEMENT_ACTION_WALK_NORMAL_SOUTHEAST:
+            (*y)++;
+            (*x)++;
+            return TRUE;
         }
     }
 
@@ -1163,6 +1199,11 @@ u8 player_get_pos_including_state_based_drift(s16 *x, s16 *y)
 u8 GetPlayerFacingDirection(void)
 {
     return gObjectEvents[gPlayerAvatar.objectEventId].facingDirection;
+}
+
+u8 GetPlayerFacingDirectionNonDiagonal(void)
+{
+    return GetNonDiagonalDirection(gObjectEvents[gPlayerAvatar.objectEventId].movementDirection);
 }
 
 u8 GetPlayerMovementDirection(void)
@@ -1432,7 +1473,7 @@ static void HideShowWarpArrow(struct ObjectEvent *objectEvent)
 
     for (x = 0, direction = DIR_SOUTH; x < 4; x++, direction++)
     {
-        if (sArrowWarpMetatileBehaviorChecks2[x](metatileBehavior) && direction == objectEvent->movementDirection)
+        if (sArrowWarpMetatileBehaviorChecks2[x](metatileBehavior) && direction == GetNonDiagonalDirection(objectEvent->movementDirection))
         {
             // Show warp arrow if applicable
             x = objectEvent->currentCoords.x;
@@ -2043,7 +2084,7 @@ static void AlignFishingAnimationFrames(void)
     if (animType == 1 || animType == 2 || animType == 3)
     {
         playerSprite->x2 = 8;
-        if (GetPlayerFacingDirection() == 3)
+        if (GetPlayerFacingDirectionNonDiagonal() == 3)
             playerSprite->x2 = -8;
     }
     if (animType == 5)
