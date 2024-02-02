@@ -75,6 +75,7 @@ static void UpdateFriendshipStepCounter(void);
 #if OW_POISON_DAMAGE < GEN_5
 static bool8 UpdatePoisonStepCounter(void);
 #endif // OW_POISON_DAMAGE
+static void GetInFrontOfPlayerPositionNonDiagonal(struct MapPosition *);
 
 static u8 GetDirectionFromBitfield(u8 bitfield)
 {
