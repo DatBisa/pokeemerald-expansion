@@ -194,8 +194,8 @@
       "x": 7,
       "y": 18,
       "elevation": 0,
-      "var": "VAR_TEMP_MIXED_RECORDS",
-      "var_value": "0",
+      "var": "VAR_ROUTE101_STATE",
+      "var_value": "2",
       "script": "Route101_EventScript_PreventExitSouth"
     },
     {
@@ -203,8 +203,8 @@
       "x": 8,
       "y": 18,
       "elevation": 0,
-      "var": "VAR_TEMP_MIXED_RECORDS",
-      "var_value": "0",
+      "var": "VAR_ROUTE101_STATE",
+      "var_value": "2",
       "script": "Route101_EventScript_PreventExitSouth"
     },
     {
@@ -212,8 +212,8 @@
       "x": 9,
       "y": 18,
       "elevation": 0,
-      "var": "VAR_TEMP_MIXED_RECORDS",
-      "var_value": "0",
+      "var": "VAR_ROUTE101_STATE",
+      "var_value": "2",
       "script": "Route101_EventScript_PreventExitSouth"
     }
   ],

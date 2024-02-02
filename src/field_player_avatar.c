@@ -2321,13 +2321,30 @@ static const u8 GrindRunNeighboringDirectionLookup[][2] =
     [DIR_WEST] =
     {
         DIR_SOUTH, DIR_NORTH
+    },
+    [DIR_SOUTHWEST] =
+    {
+        DIR_SOUTH, DIR_WEST
+    },
+    [DIR_SOUTHEAST] =
+    {
+        DIR_SOUTH, DIR_EAST
+    },
+    [DIR_NORTHWEST] =
+    {
+        DIR_NORTH, DIR_WEST
+    },
+    [DIR_NORTHEAST] =
+    {
+        DIR_NORTH, DIR_EAST
     }
+
 };
 
 // GrindRun:  The distance to look left/right for a
 //      diagonal free space.  If none is found then
 //      the player will collide instead.
-static const u8 CheckDistance = 10;
+static const u8 CheckDistance = 1;
 
 // GrindRun:  Gets which direction to grind run in.  Should
 //      be called after colliding into a wall.  Will follow
@@ -2337,15 +2354,18 @@ static u8 GetGrindRunDirection(u8 direction)
 {
     s8 leftCheck, rightCheck;
     s8 leftDirection, rightDirection;
+    //bool8 isDiagonal = FALSE;
     s16 x, y;
     struct ObjectEvent *playerObjEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
     x = playerObjEvent->currentCoords.x;
     y = playerObjEvent->currentCoords.y;
 
-    //I doubt this will ever happen in unmodified
-    //  pokeemerald code, but if some dev implements
-    //  diagonal movement somehow, this'll prevent bugs.
-    if(direction != DIR_NORTH && direction != DIR_EAST && direction != DIR_SOUTH &&  direction != DIR_WEST)
+    //Checks if direction is diagonal, or undefined.
+    if(direction > DIR_EAST && direction <= DIR_NORTHEAST)
+    {
+    //    isDiagonal = TRUE;
+    }
+    else if(direction > DIR_NORTHEAST || direction < DIR_SOUTH)
     {
         return DIR_NONE;
     }
@@ -2500,5 +2520,7 @@ static u8 CheckForCollision(s16 x, s16 y, u8 direction)
         //    return FALSE;
         //case COLLISION_SIDEWAYS_STAIRS_TO_LEFT:
         //    return FALSE;
+        default:
+            return TRUE;
     }
 }
