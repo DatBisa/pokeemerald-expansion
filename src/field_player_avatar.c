@@ -622,6 +622,7 @@ static void PlayerNotOnBikeTurningInPlace(u8 direction, u16 heldKeys)
 static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
 {
     u8 collision = CheckForPlayerAvatarCollision(direction);
+    bool8 isRunning = FALSE;
 
     if (collision)
     {
@@ -640,18 +641,25 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
             //      change this, consider that GrindRun takes control away
             //      from what the player expects and makes precise movements
             //      more difficult.
-            if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_UNDERWATER) && (heldKeys & B_BUTTON) && FlagGet(FLAG_SYS_B_DASH)
-            && IsRunningDisallowed(gObjectEvents[gPlayerAvatar.objectEventId].currentMetatileBehavior) == 0)
+            if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_UNDERWATER))
             {
+                if ((heldKeys & B_BUTTON) && FlagGet(FLAG_SYS_B_DASH)
+                && IsRunningDisallowed(gObjectEvents[gPlayerAvatar.objectEventId].currentMetatileBehavior) == 0)
+                isRunning = TRUE;
                 //Check for empty spaces next to and diagonally from the player, otherwise actually collide
                 u8 grindRunDirection;
                 grindRunDirection = GetGrindRunDirection(direction);
                 if(grindRunDirection != DIR_NONE)
                 {
-
+                    if (isRunning)
+                    {
                     PlayerRun(grindRunDirection);
-                    
                     gPlayerAvatar.flags |= PLAYER_AVATAR_FLAG_DASH;
+                    }
+                    else
+                    {
+                    PlayerWalkNormal(grindRunDirection);
+                    }
                     return;
                 }
                 else
@@ -2308,19 +2316,19 @@ static const u8 GrindRunNeighboringDirectionLookup[][2] =
 {
     [DIR_NORTH] =
     {
-        DIR_WEST, DIR_EAST
+        DIR_NORTHWEST, DIR_NORTHEAST
     },
     [DIR_EAST] =
     {
-        DIR_NORTH, DIR_SOUTH
+        DIR_NORTHEAST, DIR_SOUTHEAST
     },
     [DIR_SOUTH] =
     {
-        DIR_EAST, DIR_WEST
+        DIR_SOUTHEAST, DIR_SOUTHWEST
     },
     [DIR_WEST] =
     {
-        DIR_SOUTH, DIR_NORTH
+        DIR_SOUTHWEST, DIR_NORTHWEST
     },
     [DIR_SOUTHWEST] =
     {
@@ -2341,132 +2349,36 @@ static const u8 GrindRunNeighboringDirectionLookup[][2] =
 
 };
 
-// GrindRun:  The distance to look left/right for a
-//      diagonal free space.  If none is found then
-//      the player will collide instead.
-static const u8 CheckDistance = 1;
-
 // GrindRun:  Gets which direction to grind run in.  Should
 //      be called after colliding into a wall.  Will follow
 //      the wall left and right from the player to find a
 //      diagonal free space and prefer the cloeset one.
 static u8 GetGrindRunDirection(u8 direction)
 {
-    s8 leftCheck, rightCheck;
-    s8 leftDirection, rightDirection;
-    //bool8 isDiagonal = FALSE;
     s16 x, y;
     struct ObjectEvent *playerObjEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
     x = playerObjEvent->currentCoords.x;
     y = playerObjEvent->currentCoords.y;
 
-    //Checks if direction is diagonal, or undefined.
-    if(direction > DIR_EAST && direction <= DIR_NORTHEAST)
-    {
-    //    isDiagonal = TRUE;
-    }
-    else if(direction > DIR_NORTHEAST || direction < DIR_SOUTH)
+    if(direction > DIR_NORTHEAST || direction < DIR_SOUTH)
     {
         return DIR_NONE;
     }
-
+    
     //Get relative left and right directions, or set to
     //  DIR_NONE if there's a wall immediately to the side.
     if(CheckForCollision(x, y, GrindRunNeighboringDirectionLookup[direction][0]) == FALSE)
     {
-        leftDirection = GrindRunNeighboringDirectionLookup[direction][0];
+        return GrindRunNeighboringDirectionLookup[direction][0];
+    }
+    else if(CheckForCollision(x, y, GrindRunNeighboringDirectionLookup[direction][1]) == FALSE)
+    {
+        return GrindRunNeighboringDirectionLookup[direction][1];
     }
     else
-    {
-        leftDirection = DIR_NONE;
-    }
-    if(CheckForCollision(x, y, GrindRunNeighboringDirectionLookup[direction][1]) == FALSE)
-    {
-        rightDirection = GrindRunNeighboringDirectionLookup[direction][1];
-    }
-    else
-    {
-        rightDirection = DIR_NONE;
-    }
-
-    //No point going further if there's nowhere to go.
-    if(leftDirection == DIR_NONE && rightDirection == DIR_NONE){
-        return DIR_NONE;
-    }
-
-    //Check the for diagonal free spots..
-    if(leftDirection != DIR_NONE)
-    {
-        leftCheck = CheckDiagonalFreeSpaceLength(x, y, leftDirection, direction);
-    }
-    else
-    {
-        leftCheck = CheckDistance;
-    }
-    if(rightDirection != DIR_NONE)
-    {
-        rightCheck = CheckDiagonalFreeSpaceLength(x, y, rightDirection, direction);
-    }
-    else
-    {
-        rightCheck = CheckDistance;
-    }
-
-    //If left and right are both too 
-    //  far away, don't grind run
-    if(leftCheck == CheckDistance && rightCheck == CheckDistance)
     {
         return DIR_NONE;
     }
-
-    //Return left or right based on which 
-    //diagonal free space is closest to the player
-    if(leftCheck < rightCheck)
-    {
-        return leftDirection;
-    }
-    else
-    {
-        return rightDirection;
-    }
-
-    //Should never get here...?
-    //  but I also dont trust the compiler *that* much...
-    //  <.<;
-    return DIR_NONE;
-}
-
-// GrindRun:  Looks along the sideDirection for collisions
-//      in forwardDirection and returns the distance to
-//      that non-blocking tile.
-static u8 CheckDiagonalFreeSpaceLength(s16 x, s16 y, u8 sideDirection, u8 forwardDirection)
-{
-    s8 check = 0;
-
-    while (check < CheckDistance)
-    {
-        //Check the side...
-        if(CheckForCollision(x, y, sideDirection) == FALSE)
-        {
-            MoveCoords(sideDirection, &x, &y);
-
-            //Check forward from that tille...
-            if(CheckForCollision(x, y, forwardDirection) == FALSE)
-            {
-                //Diagonal free spot, return early
-                return check;
-            }
-        }
-        else
-        {
-            //Hit early wall to the side, definitely
-            //no diagonal free spot
-            return CheckDistance;
-        }
-        check++;
-    }
-
-    return CheckDistance;
 }
 
 // GrindRun:  This is how GrindRun determines what is and is not a wall.
