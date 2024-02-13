@@ -1081,3 +1081,5 @@ EventScript_VsSeekerChargingDone::
 	.include "data/maps/PetalburgShores/scripts.inc"
 
 	.include "data/maps/RustboroShores/scripts.inc"
+
+	.include "data/maps/WildernessPrototype/scripts.inc"

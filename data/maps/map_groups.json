@@ -2,6 +2,7 @@
   "group_order": [
     "gMapGroup_TownsAndRoutes",
     "gMapGroup_Shore",
+    "gMapGroup_Wild",
     "gMapGroup_IndoorLittleroot",
     "gMapGroup_IndoorOldale",
     "gMapGroup_IndoorDewford",
@@ -99,6 +100,9 @@
   "gMapGroup_Shore": [
     "PetalburgShores",
     "RustboroShores"
+  ],
+  "gMapGroup_Wild": [
+    "WildernessPrototype"
   ],
   "gMapGroup_IndoorLittleroot": [
     "LittlerootTown_BrendansHouse_1F",
