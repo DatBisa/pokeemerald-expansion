@@ -111,17 +111,6 @@ static const u8 sMovementScript_TrainerUnfought[] = {
     MOVEMENT_ACTION_STEP_END
 };
 
-static const u8 sMovementScript_TrainerNoRematch[] = {
-    MOVEMENT_ACTION_EMOTE_X,
-    MOVEMENT_ACTION_STEP_END
-};
-
-static const u8 sMovementScript_TrainerRematch[] = {
-    MOVEMENT_ACTION_WALK_IN_PLACE_FASTER_DOWN,
-    MOVEMENT_ACTION_EMOTE_DOUBLE_EXCL_MARK,
-    MOVEMENT_ACTION_STEP_END
-};
-
 static const u8 sFaceDirectionMovementTypeByFacingDirection[] = {
     MOVEMENT_TYPE_FACE_DOWN,
     MOVEMENT_TYPE_FACE_DOWN,
@@ -441,7 +430,7 @@ static u8 GetVsSeekerResponseInArea(void)
         rematchTrainerIdx = GetRematchTrainerIdFromTable(gRematchTable, trainerIdx);
         if (rematchTrainerIdx == 0)
         {
-            StartTrainerObjectMovementScript(&sVsSeeker->trainerInfo[vsSeekerIdx], sMovementScript_TrainerNoRematch);
+            StartTrainerObjectMovementScript(&sVsSeeker->trainerInfo[vsSeekerIdx], sMovementScript_Wait48);
             sVsSeeker->trainerDoesNotWantRematch = 1;
         }
         else
@@ -459,14 +448,14 @@ static u8 GetVsSeekerResponseInArea(void)
             }
             else if (randomValue < 30)
             {
-                StartTrainerObjectMovementScript(&sVsSeeker->trainerInfo[vsSeekerIdx], sMovementScript_TrainerNoRematch);
+                StartTrainerObjectMovementScript(&sVsSeeker->trainerInfo[vsSeekerIdx], sMovementScript_Wait48);
                 sVsSeeker->trainerDoesNotWantRematch = 1;
             }
             else
             {
                 gSaveBlock1Ptr->trainerRematches[VsSeekerConvertLocalIdToTableId(sVsSeeker->trainerInfo[vsSeekerIdx].localId)] = rematchTrainerIdx;
                 ShiftStillObjectEventCoords(&gObjectEvents[sVsSeeker->trainerInfo[vsSeekerIdx].objectEventId]);
-                StartTrainerObjectMovementScript(&sVsSeeker->trainerInfo[vsSeekerIdx], sMovementScript_TrainerRematch);
+                StartTrainerObjectMovementScript(&sVsSeeker->trainerInfo[vsSeekerIdx], sMovementScript_TrainerUnfought);
                 sVsSeeker->trainerIdxArray[sVsSeeker->numRematchableTrainers] = trainerIdx;
                 sVsSeeker->runningBehaviourEtcArray[sVsSeeker->numRematchableTrainers] = GetResponseMovementTypeFromTrainerGraphicsId(sVsSeeker->trainerInfo[vsSeekerIdx].graphicsId);
                 sVsSeeker->numRematchableTrainers++;
