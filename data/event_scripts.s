@@ -1083,3 +1083,5 @@ EventScript_VsSeekerChargingDone::
 	.include "data/maps/RustboroShores/scripts.inc"
 
 	.include "data/maps/WildernessPrototype/scripts.inc"
+
+	.include "data/maps/HoennStrait/scripts.inc"

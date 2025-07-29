@@ -64,6 +64,7 @@
 #define MAP_UNDERWATER_ROUTE105 (55 | (0 << 8))
 #define MAP_UNDERWATER_ROUTE125 (56 | (0 << 8))
 #define MAP_UNDERWATER_ROUTE102 (57 | (0 << 8))
+#define MAP_HOENN_STRAIT        (58 | (0 << 8))
 
 // gMapGroup_Shore
 #define MAP_PETALBURG_SHORES (0 | (1 << 8))

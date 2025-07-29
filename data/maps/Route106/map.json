@@ -20,8 +20,13 @@
     },
     {
       "map": "MAP_DEWFORD_TOWN",
-      "offset": 60,
+      "offset": 8,
       "direction": "down"
+    },
+    {
+      "map": "MAP_HOENN_STRAIT",
+      "offset": -50,
+      "direction": "up"
     }
   ],
   "object_events": [

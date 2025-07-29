@@ -15,7 +15,7 @@
   "connections": [
     {
       "map": "MAP_RUSTBORO_CITY",
-      "offset": 0,
+      "offset": 11,
       "direction": "up"
     },
     {
@@ -31,6 +31,16 @@
     {
       "map": "MAP_PETALBURG_SHORES",
       "offset": 0,
+      "direction": "left"
+    },
+    {
+      "map": "MAP_RUSTBORO_SHORES",
+      "offset": -39,
+      "direction": "up"
+    },
+    {
+      "map": "MAP_HOENN_STRAIT",
+      "offset": 120,
       "direction": "left"
     }
   ],
@@ -567,7 +577,7 @@
     {
       "type": "sign",
       "x": 33,
-      "y": 5,
+      "y": 7,
       "elevation": 0,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
       "script": "Route104_EventScript_RouteSignRustboro"

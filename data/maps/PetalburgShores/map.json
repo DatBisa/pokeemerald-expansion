@@ -20,8 +20,13 @@
     },
     {
       "map": "MAP_RUSTBORO_SHORES",
-      "offset": 0,
+      "offset": 11,
       "direction": "up"
+    },
+    {
+      "map": "MAP_HOENN_STRAIT",
+      "offset": 0,
+      "direction": "down"
     }
   ],
   "object_events": [
